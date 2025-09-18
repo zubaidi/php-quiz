@@ -1,0 +1,1881 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PHP Quiz Challenge - 30 Soal Random</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .code-editor {
+            background-color: #1e1e1e;
+            color: #d4d4d4;
+            font-family: 'Consolas', 'Monaco', monospace;
+            border-radius: 8px;
+            padding: 16px;
+            line-height: 1.5;
+        }
+        
+        .draggable {
+            cursor: move;
+            transition: all 0.3s ease;
+        }
+        
+        .draggable:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        
+        .drop-zone {
+            min-height: 60px;
+            border: 2px dashed #cbd5e0;
+            transition: all 0.3s ease;
+        }
+        
+        .drop-zone.drag-over {
+            border-color: #667eea;
+            background-color: #f7fafc;
+        }
+        
+        .question-card {
+            transition: all 0.3s ease;
+        }
+        
+        .question-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 24px rgba(0,0,0,0.1);
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        .progress-ring {
+            transform: rotate(-90deg);
+        }
+        
+        .option-card {
+            transition: all 0.2s ease;
+        }
+        
+        .option-card:hover {
+            border-color: #667eea;
+            background-color: #f7fafc;
+        }
+        
+        .option-card.selected {
+            border-color: #667eea;
+            background-color: #ede9fe;
+        }
+        
+        .correct-answer {
+            background-color: #d1fae5 !important;
+            border-color: #10b981 !important;
+        }
+        
+        .wrong-answer {
+            background-color: #fee2e2 !important;
+            border-color: #ef4444 !important;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Header -->
+    <header class="gradient-bg text-white py-6 shadow-lg">
+        <div class="container mx-auto px-4">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h1 class="text-3xl font-bold flex items-center">
+                        <i class="fab fa-php text-yellow-300 mr-3"></i>
+                        PHP Quiz Challenge
+                    </h1>
+                    <p class="text-purple-100 mt-1">30 Soal Random dari Bank 100 Soal</p>
+                </div>
+                <div class="text-right">
+                    <div class="text-sm text-purple-100">Skor Anda</div>
+                    <div class="text-3xl font-bold" id="totalScore">0</div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-8">
+        <!-- Progress Bar -->
+        <div class="bg-white rounded-lg shadow-md p-4 mb-8">
+            <div class="flex justify-between items-center mb-2">
+                <span class="text-sm font-medium text-gray-700">Progress</span>
+                <span class="text-sm font-medium text-gray-700">
+                    <span id="answeredCount">0</span> / 30
+                </span>
+            </div>
+            <div class="w-full bg-gray-200 rounded-full h-3">
+                <div id="progressBar" class="bg-gradient-to-r from-purple-600 to-purple-800 h-3 rounded-full transition-all duration-500" style="width: 0%"></div>
+            </div>
+        </div>
+
+        <!-- Questions Container -->
+        <div id="questionsContainer" class="grid gap-6">
+            <!-- Questions will be dynamically inserted here -->
+        </div>
+
+        <!-- Submit Button -->
+        <div class="text-center mt-12">
+            <button onclick="submitQuiz()" class="bg-gradient-to-r from-purple-600 to-purple-800 text-white font-bold py-4 px-8 rounded-full text-lg hover:shadow-lg transform hover:scale-105 transition-all duration-300 pulse">
+                <i class="fas fa-check-circle mr-2"></i> Submit Quiz
+            </button>
+        </div>
+    </main>
+
+    <!-- Results Modal -->
+    <div id="resultsModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            <div class="p-8">
+                <div class="text-center mb-8">
+                    <i class="fas fa-trophy text-6xl text-yellow-500 mb-4"></i>
+                    <h2 class="text-3xl font-bold text-gray-800 mb-2">Hasil Quiz</h2>
+                    <p class="text-gray-600">Lihat performa Anda</p>
+                </div>
+
+                <!-- Score Summary -->
+                <div class="grid grid-cols-3 gap-4 mb-8">
+                    <div class="bg-green-50 rounded-lg p-4 text-center">
+                        <div class="text-3xl font-bold text-green-600" id="correctCount">0</div>
+                        <div class="text-sm text-gray-600">Benar</div>
+                    </div>
+                    <div class="bg-red-50 rounded-lg p-4 text-center">
+                        <div class="text-3xl font-bold text-red-600" id="wrongCount">0</div>
+                        <div class="text-sm text-gray-600">Salah</div>
+                    </div>
+                    <div class="bg-blue-50 rounded-lg p-4 text-center">
+                        <div class="text-3xl font-bold text-blue-600" id="finalScore">0</div>
+                        <div class="text-sm text-gray-600">Total Skor</div>
+                    </div>
+                </div>
+
+                <!-- Performance Chart -->
+                <div class="mb-8">
+                    <h3 class="text-xl font-semibold text-gray-800 mb-4">Analisis Performa</h3>
+                    <div class="space-y-3">
+                        <div>
+                            <div class="flex justify-between mb-1">
+                                <span class="text-gray-700">Akurasi</span>
+                                <span class="font-semibold" id="accuracyPercent">0%</span>
+                            </div>
+                            <div class="bg-gray-200 rounded-full h-3 overflow-hidden">
+                                <div id="accuracyBar" class="bg-green-500 h-full transition-all duration-1000" style="width: 0%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="flex gap-4">
+                    <button onclick="reviewAnswers()" class="flex-1 bg-gray-600 hover:bg-gray-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors duration-300">
+                        <i class="fas fa-eye mr-2"></i> Review Jawaban
+                    </button>
+                    <button onclick="restartQuiz()" class="flex-1 bg-purple-600 hover:bg-purple-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors duration-300">
+                        <i class="fas fa-redo mr-2"></i> Ulangi Quiz
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Bank Soal 100 dalam format JSON
+        const questionBank = [
+            // Pilihan Ganda (1-40)
+            {
+                id: 1,
+                type: 'multiple',
+                question: 'Apa fungsi dari simbol <?php dan ?> dalam PHP?',
+                options: [
+                    'Untuk mengomentari kode',
+                    'Untuk menandai awal dan akhir blok kode PHP',
+                    'Untuk mendefinisikan variabel',
+                    'Untuk mengimpor file eksternal'
+                ],
+                correct: 1,
+                points: 2
+            },
+            {
+                id: 2,
+                type: 'multiple',
+                question: 'Bagaimana cara mendeklarasikan variabel di PHP?',
+                options: [
+                    'var $nama;',
+                    '$nama = "value";',
+                    'variable nama = "value";',
+                    'declare $nama;'
+                ],
+                correct: 1,
+                points: 2
+            },
+            {
+                id: 3,
+                type: 'multiple',
+                question: 'Fungsi apa yang digunakan untuk menampilkan output di PHP?',
+                options: [
+                    'console.log()',
+                    'print()',
+                    'echo',
+                    'display()'
+                ],
+                correct: 2,
+                points: 2
+            },
+            {
+                id: 4,
+                type: 'multiple',
+                question: 'Tipe data apa yang digunakan untuk menyimpan nilai true/false di PHP?',
+                options: [
+                    'bool',
+                    'boolean',
+                    'truefalse',
+                    'binary'
+                ],
+                correct: 1,
+                points: 2
+            },
+            {
+                id: 5,
+                type: 'multiple',
+                question: 'Apa hasil dari 10 % 3 di PHP?',
+                options: [
+                    '1',
+                    '3',
+                    '0.3',
+                    '13'
+                ],
+                correct: 0,
+                points: 2
+            },
+            {
+                id: 6,
+                type: 'multiple',
+                question: 'Bagaimana cara membuat komentar multi-baris di PHP?',
+                options: [
+                    '// komentar',
+                    '# komentar',
+                    '/* komentar */',
+                    '<!-- komentar -->'
+                ],
+                correct: 2,
+                points: 2
+            },
+            {
+                id: 7,
+                type: 'multiple',
+                question: 'Fungsi apa yang digunakan untuk menghitung panjang string di PHP?',
+                options: [
+                    'length()',
+                    'strlen()',
+                    'count()',
+                    'size()'
+                ],
+                correct: 1,
+                points: 2
+            },
+            {
+                id: 8,
+                type: 'multiple',
+                question: 'Apa perbedaan antara == dan === di PHP?',
+                options: [
+                    'Tidak ada perbedaan',
+                    '== membandingkan nilai, === membandingkan nilai dan tipe data',
+                    '== untuk string, === untuk angka',
+                    '=== lebih cepat dari =='
+                ],
+                correct: 1,
+                points: 2
+            },
+            {
+                id: 9,
+                type: 'multiple',
+                question: 'Bagaimana cara membuat array di PHP?',
+                options: [
+                    'array = [1, 2, 3]',
+                    '$array = array(1, 2, 3)',
+                    '$array = [1, 2, 3]',
+                    'B dan C benar'
+                ],
+                correct: 3,
+                points: 2
+            },
+            {
+                id: 10,
+                type: 'multiple',
+                question: 'Fungsi apa yang digunakan untuk mengirim email di PHP?',
+                options: [
+                    'send_email()',
+                    'mail()',
+                    'email()',
+                    'smtp()'
+                ],
+                correct: 1,
+                points: 2
+            },
+            {
+                id: 11,
+                type: 'multiple',
+                question: 'Apa kegunaan fungsi isset() di PHP?',
+                options: [
+                    'Mengecek apakah variabel kosong',
+                    'Mengecek apakah variabel sudah dideklarasikan',
+                    'Mengecek tipe data variabel',
+                    'Menghapus variabel'
+                ],
+                correct: 1,
+                points: 2
+            },
+            {
+                id: 12,
+                type: 'multiple',
+                question: 'Bagaimana cara menghubungkan PHP dengan database MySQL?',
+                options: [
+                    'connect_mysql()',
+                    'mysqli_connect()',
+                    'db_connect()',
+                    'mysql_connect()'
+                ],
+                correct: 1,
+                points: 2
+            },
+            {
+                id: 13,
+                type: 'multiple',
+                question: 'Apa fungsi dari $_POST di PHP?',
+                options: [
+                    'Menyimpan data dari URL',
+                    'Menyimpan data dari form dengan method POST',
+                    'Menyimpan data session',
+                    'Menyimpan data cookie'
+                ],
+                correct: 1,
+                points: 2
+            },
+            {
+                id: 14,
+                type: 'multiple',
+                question: 'Bagaimana cara membuat session di PHP?',
+                options: [
+                    'start_session()',
+                    'session_start()',
+                    'create_session()',
+                    'init_session()'
+                ],
+                correct: 1,
+                points: 2
+            },
+            {
+                id: 15,
+                type: 'multiple',
+                question: 'Apa fungsi dari header() di PHP?',
+                options: [
+                    'Mengatur header HTTP',
+                    'Membuat header HTML',
+                    'Mengirim header email',
+                    'Mengatur header database'
+                ],
+                correct: 0,
+                points: 2
+            },
+            {
+                id: 16,
+                type: 'multiple',
+                question: 'Bagaimana cara mengupload file di PHP?',
+                options: [
+                    'Menggunakan $_FILES array',
+                    'Menggunakan $_UPLOAD array',
+                    'Menggunakan move_uploaded_file()',
+                    'A dan C benar'
+                ],
+                correct: 3,
+                points: 2
+            },
+            {
+                id: 17,
+                type: 'multiple',
+                question: 'Apa fungsi dari include di PHP?',
+                options: [
+                    'Mengimpor class',
+                    'Menyertakan file PHP lain',
+                    'Mengimpor library',
+                    'Menghubungkan database'
+                ],
+                correct: 1,
+                points: 2
+            },
+            {
+                id: 18,
+                type: 'multiple',
+                question: 'Bagaimana cara membuat function di PHP?',
+                options: [
+                    'function namaFunction() {}',
+                    'def namaFunction() {}',
+                    'func namaFunction() {}',
+                    'create function namaFunction() {}'
+                ],
+                correct: 0,
+                points: 2
+            },
+            {
+                id: 19,
+                type: 'multiple',
+                question: 'Apa perbedaan antara include dan require?',
+                options: [
+                    'Tidak ada perbedaan',
+                    'require akan menampilkan error fatal jika file tidak ditemukan',
+                    'include lebih cepat dari require',
+                    'require hanya untuk file class'
+                ],
+                correct: 1,
+                points: 2
+            },
+            {
+                id: 20,
+                type: 'multiple',
+                question: 'Fungsi apa yang digunakan untuk mengenkripsi password di PHP?',
+                options: [
+                    'encrypt()',
+                    'password_hash()',
+                    'md5()',
+                    'sha1()'
+                ],
+                correct: 1,
+                points: 2
+            },
+            {
+                id: 21,
+                type: 'multiple',
+                question: 'Apa fungsi dari $_GET di PHP?',
+                options: [
+                    'Mengambil data dari form POST',
+                    'Mengambil data dari URL',
+                    'Mengambil data dari session',
+                    'Mengambil data dari cookie'
+                ],
+                correct: 1,
+                points: 2
+            },
+            {
+                id: 22,
+                type: 'multiple',
+                question: 'Bagaimana cara membuat konstanta di PHP?',
+                options: [
+                    'const NAME = "value";',
+                    'define("NAME", "value");',
+                    'constant NAME = "value";',
+                    'A dan B benar'
+                ],
+                correct: 3,
+                points: 2
+            },
+            {
+                id: 23,
+                type: 'multiple',
+                question: 'Apa fungsi dari unset() di PHP?',
+                options: [
+                    'Menghapus variabel',
+                    'Mengecek variabel',
+                    'Mengatur variabel',
+                    'Mengosongkan variabel'
+                ],
+                correct: 0,
+                points: 2
+            },
+            {
+                id: 24,
+                type: 'multiple',
+                question: 'Bagaimana cara mengambil tahun saat ini di PHP?',
+                options: [
+                    'date("Y")',
+                    'get_year()',
+                    'time("year")',
+                    'current_year()'
+                ],
+                correct: 0,
+                points: 2
+            },
+            {
+                id: 25,
+                type: 'multiple',
+                question: 'Apa fungsi dari explode() di PHP?',
+                options: [
+                    'Menggabungkan string',
+                    'Memecah string menjadi array',
+                    'Menghapus string',
+                    'Mengubah huruf besar'
+                ],
+                correct: 1,
+                points: 2
+            },
+            {
+                id: 26,
+                type: 'multiple',
+                question: 'Bagaimana cara membuat loop foreach di PHP?',
+                options: [
+                    'foreach array as value {}',
+                    'foreach ($array as $value) {}',
+                    'for each $array as $value {}',
+                    'loop $array as $value {}'
+                ],
+                correct: 1,
+                points: 2
+            },
+            {
+                id: 27,
+                type: 'multiple',
+                question: 'Apa fungsi dari mysqli_fetch_assoc()?',
+                options: [
+                    'Menghubungkan database',
+                    'Mengambil data sebagai array numerik',
+                    'Mengambil data sebagai array asosiatif',
+                    'Menutup koneksi database'
+                ],
+                correct: 2,
+                points: 2
+            },
+            {
+                id: 28,
+                type: 'multiple',
+                question: 'Bagaimana cara menghapus cookie di PHP?',
+                options: [
+                    'delete_cookie()',
+                    'unset($_COOKIE["name"])',
+                    'setcookie("name", "", time() - 3600)',
+                    'remove_cookie("name")'
+                ],
+                correct: 2,
+                points: 2
+            },
+            {
+                id: 29,
+                type: 'multiple',
+                question: 'Apa fungsi dari $_SERVER di PHP?',
+                options: [
+                    'Menyimpan informasi server',
+                    'Menyimpan data form',
+                    'Menyimpan data session',
+                    'Menyimpan data database'
+                ],
+                correct: 0,
+                points: 2
+            },
+            {
+                id: 30,
+                type: 'multiple',
+                question: 'Bagaimana cara membuat namespace di PHP?',
+                options: [
+                    'namespace MyNamespace;',
+                    'use namespace MyNamespace;',
+                    'create namespace MyNamespace;',
+                    'define namespace MyNamespace;'
+                ],
+                correct: 0,
+                points: 2
+            },
+            {
+                id: 31,
+                type: 'multiple',
+                question: 'Apa fungsi dari json_encode() di PHP?',
+                options: [
+                    'Mengubah JSON menjadi array',
+                    'Mengubah array menjadi JSON',
+                    'Membaca file JSON',
+                    'Menulis file JSON'
+                ],
+                correct: 1,
+                points: 2
+            },
+            {
+                id: 32,
+                type: 'multiple',
+                question: 'Bagaimana cara membuat trait di PHP?',
+                options: [
+                    'trait MyTrait {}',
+                    'create trait MyTrait {}',
+                    'trait MyTrait() {}',
+                    'use trait MyTrait {}'
+                ],
+                correct: 0,
+                points: 2
+            },
+            {
+                id: 33,
+                type: 'multiple',
+                question: 'Apa fungsi dari __construct() di PHP?',
+                options: [
+                    'Destructor',
+                    'Constructor',
+                    'Method statis',
+                    'Method abstrak'
+                ],
+                correct: 1,
+                points: 2
+            },
+            {
+                id: 34,
+                type: 'multiple',
+                question: 'Bagaimana cara membuat property private di PHP?',
+                options: [
+                    'private $name;',
+                    'var private $name;',
+                    'property private $name;',
+                    'hidden $name;'
+                ],
+                correct: 0,
+                points: 2
+            },
+            {
+                id: 35,
+                type: 'multiple',
+                question: 'Apa fungsi dari file_get_contents() di PHP?',
+                options: [
+                    'Mengupload file',
+                    'Membaca isi file',
+                    'Menulis ke file',
+                    'Menghapus file'
+                ],
+                correct: 1,
+                points: 2
+            },
+            {
+                id: 36,
+                type: 'multiple',
+                question: 'Bagaimana cara membuat interface di PHP?',
+                options: [
+                    'interface MyInterface {}',
+                    'create interface MyInterface {}',
+                    'class interface MyInterface {}',
+                    'define interface MyInterface {}'
+                ],
+                correct: 0,
+                points: 2
+            },
+            {
+                id: 37,
+                type: 'multiple',
+                question: 'Apa fungsi dari array_push() di PHP?',
+                options: [
+                    'Menghapus elemen array',
+                    'Menambah elemen di akhir array',
+                    'Mengurutkan array',
+                    'Menghitung elemen array'
+                ],
+                correct: 1,
+                points: 2
+            },
+            {
+                id: 38,
+                type: 'multiple',
+                question: 'Bagaimana cara membuat method static di PHP?',
+                options: [
+                    'static function myMethod() {}',
+                    'function static myMethod() {}',
+                    'public static function myMethod() {}',
+                    'A dan C benar'
+                ],
+                correct: 3,
+                points: 2
+            },
+            {
+                id: 39,
+                type: 'multiple',
+                question: 'Apa fungsi dari $_SESSION di PHP?',
+                options: [
+                    'Menyimpan data sementara di server',
+                    'Menyimpan data di browser',
+                    'Menyimpan data di database',
+                    'Menyimpan data di file'
+                ],
+                correct: 0,
+                points: 2
+            },
+            {
+                id: 40,
+                type: 'multiple',
+                question: 'Bagaimana cara membuat exception di PHP?',
+                options: [
+                    'throw new Exception("Error");',
+                    'create Exception("Error");',
+                    'raise Exception("Error");',
+                    'exception("Error");'
+                ],
+                correct: 0,
+                points: 2
+            },
+
+            // Mengisi Kode (41-70)
+            {
+                id: 41,
+                type: 'fill',
+                question: 'Lengkapi kode berikut untuk menampilkan "Hello World":',
+                code: '<?php\n    ______("Hello World");\n?>',
+                answer: 'echo',
+                points: 2
+            },
+            {
+                id: 42,
+                type: 'fill',
+                question: 'Lengkapi kode untuk membuat variabel dengan nama "nama" dan nilai "John":',
+                code: '<?php\n    $______ = "John";\n?>',
+                answer: 'nama',
+                points: 2
+            },
+            {
+                id: 43,
+                type: 'fill',
+                question: 'Lengkapi kondisi if untuk mengecek apakah $umur >= 18:',
+                code: '<?php\n    if ($umur ______ 18) {\n        echo "Dewasa";\n    }\n?>',
+                answer: '>=',
+                points: 2
+            },
+            {
+                id: 44,
+                type: 'fill',
+                question: 'Lengkapi perulangan for dari 1 sampai 5:',
+                code: '<?php\n    for ($i = 1; $i ______ 5; $i++) {\n        echo $i;\n    }\n?>',
+                answer: '<=',
+                points: 2
+            },
+            {
+                id: 45,
+                type: 'fill',
+                question: 'Lengkapi fungsi untuk mengembalikan jumlah dua angka:',
+                code: '<?php\n    function tambah($a, $b) {\n        ______ $a + $b;\n    }\n?>',
+                answer: 'return',
+                points: 2
+            },
+            {
+                id: 46,
+                type: 'fill',
+                question: 'Lengkapi kode untuk membuat array:',
+                code: '<?php\n    $buah = ______("apel", "jeruk", "mangga");\n?>',
+                answer: 'array',
+                points: 2
+            },
+            {
+                id: 47,
+                type: 'fill',
+                question: 'Lengkapi kode untuk mengakses elemen array pertama:',
+                code: '<?php\n    $arr = array(10, 20, 30);\n    echo $arr[______];\n?>',
+                answer: '0',
+                points: 2
+            },
+            {
+                id: 48,
+                type: 'fill',
+                question: 'Lengkapi kode untuk menambahkan elemen ke array:',
+                code: '<?php\n    $arr = array(1, 2);\n    $arr[] = ______;\n?>',
+                answer: '3',
+                points: 2
+            },
+            {
+                id: 49,
+                type: 'fill',
+                question: 'Lengkapi kode untuk menghitung jumlah elemen array:',
+                code: '<?php\n    $arr = array(1, 2, 3, 4, 5);\n    echo ______($arr);\n?>',
+                answer: 'count',
+                points: 2
+            },
+            {
+                id: 50,
+                type: 'fill',
+                question: 'Lengkapi kode untuk membuat string menjadi huruf besar:',
+                code: '<?php\n    $str = "hello";\n    echo ______($str);\n?>',
+                answer: 'strtoupper',
+                points: 2
+            },
+            {
+                id: 51,
+                type: 'fill',
+                question: 'Lengkapi kode untuk mengambil substring:',
+                code: '<?php\n    $str = "Hello World";\n    echo ______($str, 0, 5);\n?>',
+                answer: 'substr',
+                points: 2
+            },
+            {
+                id: 52,
+                type: 'fill',
+                question: 'Lengkapi kode untuk menghubungkan ke database MySQL:',
+                code: '<?php\n    $conn = ______("localhost", "user", "pass", "db");\n?>',
+                answer: 'mysqli_connect',
+                points: 2
+            },
+            {
+                id: 53,
+                type: 'fill',
+                question: 'Lengkapi kode untuk menjalankan query SELECT:',
+                code: '<?php\n    $result = ______($conn, "SELECT * FROM users");\n?>',
+                answer: 'mysqli_query',
+                points: 2
+            },
+            {
+                id: 54,
+                type: 'fill',
+                question: 'Lengkapi kode untuk mengambil data sebagai array asosiatif:',
+                code: '<?php\n    $row = ______($result);\n?>',
+                answer: 'mysqli_fetch_assoc',
+                points: 2
+            },
+            {
+                id: 55,
+                type: 'fill',
+                question: 'Lengkapi kode untuk menutup koneksi database:',
+                code: '<?php\n    ______($conn);\n?>',
+                answer: 'mysqli_close',
+                points: 2
+            },
+            {
+                id: 56,
+                type: 'fill',
+                question: 'Lengkapi kode untuk membuat session:',
+                code: '<?php\n    ______();\n    $_SESSION["user"] = "John";\n?>',
+                answer: 'session_start',
+                points: 2
+            },
+            {
+                id: 57,
+                type: 'fill',
+                question: 'Lengkapi kode untuk menghapus session:',
+                code: '<?php\n    session_start();\n    session______();\n?>',
+                answer: 'destroy',
+                points: 2
+            },
+            {
+                id: 58,
+                type: 'fill',
+                question: 'Lengkapi kode untuk membuat cookie:',
+                code: '<?php\n    ______("user", "John", time() + 3600);\n?>',
+                answer: 'setcookie',
+                points: 2
+            },
+            {
+                id: 59,
+                type: 'fill',
+                question: 'Lengkapi kode untuk mengecek apakah form disubmit:',
+                code: '<?php\n    if ($_SERVER["______"] == "POST") {\n        // proses form\n    }\n?>',
+                answer: 'REQUEST_METHOD',
+                points: 2
+            },
+            {
+                id: 60,
+                type: 'fill',
+                question: 'Lengkapi kode untuk mengupload file:',
+                code: '<?php\n    ______($_FILES["file"]["tmp_name"], "uploads/" . $_FILES["file"]["name"]);\n?>',
+                answer: 'move_uploaded_file',
+                points: 2
+            },
+            {
+                id: 61,
+                type: 'fill',
+                question: 'Lengkapi kode untuk membuat konstanta:',
+                code: '<?php\n    ______("PI", 3.14);\n?>',
+                answer: 'define',
+                points: 2
+            },
+            {
+                id: 62,
+                type: 'fill',
+                question: 'Lengkapi kode untuk mengambil tahun saat ini:',
+                code: '<?php\n    $tahun = ______("Y");\n?>',
+                answer: 'date',
+                points: 2
+            },
+            {
+                id: 63,
+                type: 'fill',
+                question: 'Lengkapi kode untuk memecah string:',
+                code: '<?php\n    $arr = ______(",", "apple,orange,banana");\n?>',
+                answer: 'explode',
+                points: 2
+            },
+            {
+                id: 64,
+                type: 'fill',
+                question: 'Lengkapi kode untuk menggabungkan array:',
+                code: '<?php\n    $result = ______($arr1, $arr2);\n?>',
+                answer: 'array_merge',
+                points: 2
+            },
+            {
+                id: 65,
+                type: 'fill',
+                question: 'Lengkapi kode untuk mengurutkan array:',
+                code: '<?php\n    ______($arr);\n?>',
+                answer: 'sort',
+                points: 2
+            },
+            {
+                id: 66,
+                type: 'fill',
+                question: 'Lengkapi kode untuk mencari nilai dalam array:',
+                code: '<?php\n    $pos = ______("apple", $arr);\n?>',
+                answer: 'array_search',
+                points: 2
+            },
+            {
+                id: 67,
+                type: 'fill',
+                question: 'Lengkapi kode untuk memeriksa tipe data:',
+                code: '<?php\n    if (______($var) == "string") {\n        echo "String";\n    }\n?>',
+                answer: 'gettype',
+                points: 2
+            },
+            {
+                id: 68,
+                type: 'fill',
+                question: 'Lengkapi kode untuk mengubah string menjadi integer:',
+                code: '<?php\n    $num = ______("123");\n?>',
+                answer: 'intval',
+                points: 2
+            },
+            {
+                id: 69,
+                type: 'fill',
+                question: 'Lengkapi kode untuk menghasilkan angka random:',
+                code: '<?php\n    $rand = ______(1, 100);\n?>',
+                answer: 'rand',
+                points: 2
+            },
+            {
+                id: 70,
+                type: 'fill',
+                question: 'Lengkapi kode untuk menulis ke file:',
+                code: '<?php\n    $file = ______("test.txt", "w");\n    fwrite($file, "Hello");\n    fclose($file);\n?>',
+                answer: 'fopen',
+                points: 2
+            },
+
+            // Menyusun Kode (71-100)
+            {
+                id: 71,
+                type: 'arrange',
+                question: 'Susun kode berikut untuk membuat perulangan while yang menampilkan angka 1-5:',
+                codeLines: [
+                    '$i = 1;',
+                    'while ($i <= 5) {',
+                    '    echo $i . "<br>";',
+                    '    $i++;',
+                    '}'
+                ],
+                correctOrder: [0, 1, 2, 3, 4],
+                points: 2
+            },
+            {
+                id: 72,
+                type: 'arrange',
+                question: 'Susun kode untuk membuat fungsi yang menghitung luas persegi panjang:',
+                codeLines: [
+                    'function hitungLuas($panjang, $lebar) {',
+                    '    $luas = $panjang * $lebar;',
+                    '    return $luas;',
+                    '}',
+                    'echo hitungLuas(5, 3);'
+                ],
+                correctOrder: [0, 1, 2, 3, 4],
+                points: 2
+            },
+            {
+                id: 73,
+                type: 'arrange',
+                question: 'Susun kode untuk membaca data dari form HTML:',
+                codeLines: [
+                    '<?php',
+                    'if ($_SERVER["REQUEST_METHOD"] == "POST") {',
+                    '    $nama = $_POST["nama"];',
+                    '    echo "Halo, " . $nama;',
+                    '}',
+                    '?>'
+                ],
+                correctOrder: [0, 1, 2, 3, 4, 5],
+                points: 2
+            },
+            {
+                id: 74,
+                type: 'arrange',
+                question: 'Susun kode untuk membuat array dan menampilkannya dengan foreach:',
+                codeLines: [
+                    '$buah = array("apel", "jeruk", "mangga");',
+                    'foreach ($buah as $item) {',
+                    '    echo $item . "<br>";',
+                    '}'
+                ],
+                correctOrder: [0, 1, 2, 3],
+                points: 2
+            },
+            {
+                id: 75,
+                type: 'arrange',
+                question: 'Susun kode untuk membuat koneksi dan query database:',
+                codeLines: [
+                    '$conn = mysqli_connect("localhost", "user", "pass", "db");',
+                    'if (!$conn) {',
+                    '    die("Connection failed: " . mysqli_connect_error());',
+                    '}',
+                    '$sql = "SELECT * FROM users";',
+                    '$result = mysqli_query($conn, $sql);'
+                ],
+                correctOrder: [0, 1, 2, 3, 4],
+                points: 2
+            },
+            {
+                id: 76,
+                type: 'arrange',
+                question: 'Susun kode untuk membuat session:',
+                codeLines: [
+                    '<?php',
+                    'session_start();',
+                    '$_SESSION["username"] = "john";',
+                    'echo "Session created";',
+                    '?>'
+                ],
+                correctOrder: [0, 1, 2, 3, 4],
+                points: 2
+            },
+            {
+                id: 77,
+                type: 'arrange',
+                question: 'Susun kode untuk mengupload file:',
+                codeLines: [
+                    'if (isset($_FILES["file"])) {',
+                    '    $target_dir = "uploads/";',
+                    '    $target_file = $target_dir . basename($_FILES["file"]["name"]);',
+                    '    move_uploaded_file($_FILES["file"]["tmp_name"], $target_file);',
+                    '    echo "File uploaded successfully";',
+                    '}'
+                ],
+                correctOrder: [0, 1, 2, 3, 4, 5],
+                points: 2
+            },
+            {
+                id: 78,
+                type: 'arrange',
+                question: 'Susun kode untuk membuat cookie:',
+                codeLines: [
+                    '<?php',
+                    '$cookie_name = "user";',
+                    '$cookie_value = "John Doe";',
+                    'setcookie($cookie_name, $cookie_value, time() + (86400 * 30), "/");',
+                    'echo "Cookie is set";',
+                    '?>'
+                ],
+                correctOrder: [0, 1, 2, 3, 4, 5],
+                points: 2
+            },
+            {
+                id: 79,
+                type: 'arrange',
+                question: 'Susun kode untuk validasi form:',
+                codeLines: [
+                    '<?php',
+                    '$name = test_input($_POST["name"]);',
+                    'if (!preg_match("/^[a-zA-Z ]*$/",$name)) {',
+                    '    $nameErr = "Only letters and white space allowed";',
+                    '}',
+                    'function test_input($data) {',
+                    '    $data = trim($data);',
+                    '    $data = stripslashes($data);',
+                    '    $data = htmlspecialchars($data);',
+                    '    return $data;',
+                    '}',
+                    '?>'
+                ],
+                correctOrder: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+                points: 2
+            },
+            {
+                id: 80,
+                type: 'arrange',
+                question: 'Susun kode untuk membuat class sederhana:',
+                codeLines: [
+                    '<?php',
+                    'class User {',
+                    '    public $name;',
+                    '    public function __construct($name) {',
+                    '        $this->name = $name;',
+                    '    }',
+                    '    public function greet() {',
+                    '        return "Hello, " . $this->name;',
+                    '    }',
+                    '}',
+                    '$user = new User("Alice");',
+                    'echo $user->greet();',
+                    '?>'
+                ],
+                correctOrder: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+                points: 2
+            },
+            {
+                id: 81,
+                type: 'arrange',
+                question: 'Susun kode untuk membaca file:',
+                codeLines: [
+                    '<?php',
+                    '$file = fopen("test.txt", "r");',
+                    'if ($file) {',
+                    '    while (($line = fgets($file)) !== false) {',
+                    '        echo $line . "<br>";',
+                    '    }',
+                    '    fclose($file);',
+                    '}',
+                    '?>'
+                ],
+                correctOrder: [0, 1, 2, 3, 4, 5, 6, 7],
+                points: 2
+            },
+            {
+                id: 82,
+                type: 'arrange',
+                question: 'Susun kode untuk membuat API endpoint sederhana:',
+                codeLines: [
+                    '<?php',
+                    'header("Content-Type: application/json");',
+                    '$data = array("status" => "success", "message" => "Hello API");',
+                    'echo json_encode($data);',
+                    '?>'
+                ],
+                correctOrder: [0, 1, 2, 3, 4],
+                points: 2
+            },
+            {
+                id: 83,
+                type: 'arrange',
+                question: 'Susun kode untuk membuat login sederhana:',
+                codeLines: [
+                    '<?php',
+                    'session_start();',
+                    'if ($_SERVER["REQUEST_METHOD"] == "POST") {',
+                    '    $username = $_POST["username"];',
+                    '    $password = $_POST["password"];',
+                    '    if ($username == "admin" && $password == "123456") {',
+                    '        $_SESSION["loggedin"] = true;',
+                    '        header("Location: dashboard.php");',
+                    '    } else {',
+                    '        echo "Invalid credentials";',
+                    '    }',
+                    '}',
+                    '?>'
+                ],
+                correctOrder: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+                points: 2
+            },
+            {
+                id: 84,
+                type: 'arrange',
+                question: 'Susun kode untuk membuat CRUD Create:',
+                codeLines: [
+                    '<?php',
+                    '$conn = mysqli_connect("localhost", "user", "pass", "db");',
+                    '$name = $_POST["name"];',
+                    '$email = $_POST["email"];',
+                    '$sql = "INSERT INTO users (name, email) VALUES (\'$name\', \'$email\')";',
+                    'if (mysqli_query($conn, $sql)) {',
+                    '    echo "New record created successfully";',
+                    '} else {',
+                    '    echo "Error: " . $sql . "<br>" . mysqli_error($conn);',
+                    '}',
+                    'mysqli_close($conn);',
+                    '?>'
+                ],
+                correctOrder: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+                points: 2
+            },
+            {
+                id: 85,
+                type: 'arrange',
+                question: 'Susun kode untuk membuat pagination:',
+                codeLines: [
+                    '<?php',
+                    '$page = isset($_GET["page"]) ? $_GET["page"] : 1;',
+                    '$limit = 10;',
+                    '$offset = ($page - 1) * $limit;',
+                    '$sql = "SELECT * FROM users LIMIT $limit OFFSET $offset";',
+                    '$result = mysqli_query($conn, $sql);',
+                    'while ($row = mysqli_fetch_assoc($result)) {',
+                    '    echo $row["name"] . "<br>";',
+                    '}',
+                    '?>'
+                ],
+                correctOrder: [0, 1, 2, 3, 4, 5, 6, 7],
+                points: 2
+            },
+            {
+                id: 86,
+                type: 'arrange',
+                question: 'Susun kode untuk membuat try-catch:',
+                codeLines: [
+                    '<?php',
+                    'try {',
+                    '    $result = 10 / 0;',
+                    '} catch (Exception $e) {',
+                    '    echo "Error: " . $e->getMessage();',
+                    '}',
+                    '?>'
+                ],
+                correctOrder: [0, 1, 2, 3, 4, 5],
+                points: 2
+            },
+            {
+                id: 87,
+                type: 'arrange',
+                question: 'Susun kode untuk membuat namespace:',
+                codeLines: [
+                    '<?php',
+                    'namespace MyNamespace;',
+                    'class MyClass {',
+                    '    public function hello() {',
+                    '        return "Hello from MyClass";',
+                    '    }',
+                    '}',
+                    '$obj = new MyNamespace\\MyClass();',
+                    'echo $obj->hello();',
+                    '?>'
+                ],
+                correctOrder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+                points: 2
+            },
+            {
+                id: 88,
+                type: 'arrange',
+                question: 'Susun kode untuk membuat trait:',
+                codeLines: [
+                    '<?php',
+                    'trait Logger {',
+                    '    public function log($msg) {',
+                    '        echo "Log: " . $msg;',
+                    '    }',
+                    '}',
+                    'class User {',
+                    '    use Logger;',
+                    '}',
+                    '$user = new User();',
+                    '$user->log("User created");',
+                    '?>'
+                ],
+                correctOrder: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+                points: 2
+            },
+            {
+                id: 89,
+                type: 'arrange',
+                question: 'Susun kode untuk membuat interface:',
+                codeLines: [
+                    '<?php',
+                    'interface Shape {',
+                    '    public function area();',
+                    '}',
+                    'class Circle implements Shape {',
+                    '    private $radius;',
+                    '    public function __construct($radius) {',
+                    '        $this->radius = $radius;',
+                    '    }',
+                    '    public function area() {',
+                    '        return 3.14 * $this->radius * $this->radius;',
+                    '    }',
+                    '}',
+                    '$circle = new Circle(5);',
+                    'echo $circle->area();',
+                    '?>'
+                ],
+                correctOrder: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+                points: 2
+            },
+            {
+                id: 90,
+                type: 'arrange',
+                question: 'Susun kode untuk membuat abstract class:',
+                codeLines: [
+                    '<?php',
+                    'abstract class Animal {',
+                    '    abstract public function makeSound();',
+                    '}',
+                    'class Dog extends Animal {',
+                    '    public function makeSound() {',
+                    '        return "Woof!";',
+                    '    }',
+                    '}',
+                    '$dog = new Dog();',
+                    'echo $dog->makeSound();',
+                    '?>'
+                ],
+                correctOrder: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+                points: 2
+            },
+            {
+                id: 91,
+                type: 'arrange',
+                question: 'Susun kode untuk membuat static method:',
+                codeLines: [
+                    '<?php',
+                    'class Math {',
+                    '    public static function add($a, $b) {',
+                    '        return $a + $b;',
+                    '    }',
+                    '}',
+                    '$result = Math::add(5, 3);',
+                    'echo $result;',
+                    '?>'
+                ],
+                correctOrder: [0, 1, 2, 3, 4, 5, 6],
+                points: 2
+            },
+            {
+                id: 92,
+                type: 'arrange',
+                question: 'Susun kode untuk membuat constant dalam class:',
+                codeLines: [
+                    '<?php',
+                    'class Config {',
+                    '    const DB_HOST = "localhost";',
+                    '    const DB_USER = "root";',
+                    '}',
+                    'echo Config::DB_HOST;',
+                    '?>'
+                ],
+                correctOrder: [0, 1, 2, 3, 4, 5],
+                points: 2
+            },
+            {
+                id: 93,
+                type: 'arrange',
+                question: 'Susun kode untuk membuat destructor:',
+                codeLines: [
+                    '<?php',
+                    'class MyClass {',
+                    '    public function __construct() {',
+                    '        echo "Object created";',
+                    '    }',
+                    '    public function __destruct() {',
+                    '        echo "Object destroyed";',
+                    '    }',
+                    '}',
+                    '$obj = new MyClass();',
+                    'unset($obj);',
+                    '?>'
+                ],
+                correctOrder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+                points: 2
+            },
+            {
+                id: 94,
+                type: 'arrange',
+                question: 'Susun kode untuk membuat magic method __get:',
+                codeLines: [
+                    '<?php',
+                    'class User {',
+                    '    private $data = array();',
+                    '    public function __set($name, $value) {',
+                    '        $this->data[$name] = $value;',
+                    '    }',
+                    '    public function __get($name) {',
+                    '        return $this->data[$name];',
+                    '    }',
+                    '}',
+                    '$user = new User();',
+                    '$user->name = "John";',
+                    'echo $user->name;',
+                    '?>'
+                ],
+                correctOrder: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+                points: 2
+            },
+            {
+                id: 95,
+                type: 'arrange',
+                question: 'Susun kode untuk membuat autoload class:',
+                codeLines: [
+                    '<?php',
+                    'spl_autoload_register(function ($class_name) {',
+                    '    include $class_name . \'.php\';',
+                    '});',
+                    '$obj = new MyClass();',
+                    '?>'
+                ],
+                correctOrder: [0, 1, 2, 3, 4],
+                points: 2
+            },
+            {
+                id: 96,
+                type: 'arrange',
+                question: 'Susun kode untuk membuat JSON API response:',
+                codeLines: [
+                    '<?php',
+                    'header("Content-Type: application/json");',
+                    '$response = array(',
+                    '    "status" => "success",',
+                    '    "data" => array("id" => 1, "name" => "John")',
+                    ');',
+                    'echo json_encode($response);',
+                    '?>'
+                ],
+                correctOrder: [0, 1, 2, 3, 4, 5, 6],
+                points: 2
+            },
+            {
+                id: 97,
+                type: 'arrange',
+                question: 'Susun kode untuk membuat file upload dengan validation:',
+                codeLines: [
+                    '<?php',
+                    'if ($_FILES["file"]["error"] == 0) {',
+                    '    $allowed = array("jpg", "jpeg", "png");',
+                    '    $ext = pathinfo($_FILES["file"]["name"], PATHINFO_EXTENSION);',
+                    '    if (in_array($ext, $allowed)) {',
+                    '        move_uploaded_file($_FILES["file"]["tmp_name"], "uploads/" . $_FILES["file"]["name"]);',
+                    '        echo "File uploaded successfully";',
+                    '    } else {',
+                    '        echo "Invalid file type";',
+                    '    }',
+                    '}',
+                    '?>'
+                ],
+                correctOrder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+                points: 2
+            },
+            {
+                id: 98,
+                type: 'arrange',
+                question: 'Susun kode untuk membuat CRUD Read dengan pagination:',
+                codeLines: [
+                    '<?php',
+                    '$conn = mysqli_connect("localhost", "user", "pass", "db");',
+                    '$page = isset($_GET["page"]) ? $_GET["page"] : 1;',
+                    '$limit = 5;',
+                    '$offset = ($page - 1) * $limit;',
+                    '$sql = "SELECT * FROM products LIMIT $limit OFFSET $offset";',
+                    '$result = mysqli_query($conn, $sql);',
+                    'while ($row = mysqli_fetch_assoc($result)) {',
+                    '    echo $row["name"] . "<br>";',
+                    '}',
+                    'mysqli_close($conn);',
+                    '?>'
+                ],
+                correctOrder: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+                points: 2
+            },
+            {
+                id: 99,
+                type: 'arrange',
+                question: 'Susun kode untuk membuat session dengan timeout:',
+                codeLines: [
+                    '<?php',
+                    'session_start();',
+                    '$timeout = 1800; // 30 minutes',
+                    'if (isset($_SESSION["last_activity"]) && (time() - $_SESSION["last_activity"] > $timeout)) {',
+                    '    session_unset();',
+                    '    session_destroy();',
+                    '}',
+                    '$_SESSION["last_activity"] = time();',
+                    '?>'
+                ],
+                correctOrder: [0, 1, 2, 3, 4, 5, 6],
+                points: 2
+            },
+            {
+                id: 100,
+                type: 'arrange',
+                question: 'Susun kode untuk membuat REST API dengan method GET:',
+                codeLines: [
+                    '<?php',
+                    'header("Content-Type: application/json");',
+                    'if ($_SERVER["REQUEST_METHOD"] == "GET") {',
+                    '    $id = isset($_GET["id"]) ? $_GET["id"] : null;',
+                    '    if ($id) {',
+                    '        $response = array("id" => $id, "name" => "Product " . $id);',
+                    '    } else {',
+                    '        $response = array("error" => "ID required");',
+                    '    }',
+                    '    echo json_encode($response);',
+                    '} else {',
+                    '    echo json_encode(array("error" => "Method not allowed"));',
+                    '}',
+                    '?>'
+                ],
+                correctOrder: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+                points: 2
+            }
+        ];
+
+        // Game State
+        let selectedQuestions = [];
+        let userAnswers = {};
+        let totalScore = 0;
+        let answeredCount = 0;
+
+        // Initialize quiz
+        function initQuiz() {
+            // Select 30 random questions
+            selectedQuestions = getRandomQuestions(30);
+            displayQuestions();
+        }
+
+        function getRandomQuestions(count) {
+            const shuffled = [...questionBank].sort(() => 0.5 - Math.random());
+            return shuffled.slice(0, count);
+        }
+
+        function displayQuestions() {
+            const container = document.getElementById('questionsContainer');
+            container.innerHTML = '';
+
+            selectedQuestions.forEach((question, index) => {
+                const questionCard = createQuestionCard(question, index);
+                container.appendChild(questionCard);
+            });
+        }
+
+        function createQuestionCard(question, index) {
+            const card = document.createElement('div');
+            card.className = 'question-card bg-white rounded-xl shadow-lg p-6 fade-in';
+            card.style.animationDelay = `${index * 0.1}s`;
+
+            const typeLabel = getTypeLabel(question.type);
+            
+            card.innerHTML = `
+                <div class="flex items-start justify-between mb-4">
+                    <div class="flex items-center space-x-3">
+                        <span class="bg-purple-100 text-purple-600 text-sm font-semibold px-3 py-1 rounded-full">
+                            ${typeLabel}
+                        </span>
+                        <h3 class="text-lg font-semibold text-gray-800">Soal ${index + 1}</h3>
+                    </div>
+                    <span class="text-sm text-gray-500">${question.points} poin</span>
+                </div>
+                <p class="text-gray-700 mb-4">${question.question}</p>
+                <div id="question-content-${index}"></div>
+            `;
+
+            // Add question content based on type
+            const contentDiv = card.querySelector(`#question-content-${index}`);
+            switch(question.type) {
+                case 'multiple':
+                    contentDiv.appendChild(createMultipleChoice(question, index));
+                    break;
+                case 'fill':
+                    contentDiv.appendChild(createFillCode(question, index));
+                    break;
+                case 'arrange':
+                    contentDiv.appendChild(createArrangeCode(question, index));
+                    break;
+            }
+
+            return card;
+        }
+
+        function getTypeLabel(type) {
+            const labels = {
+                'multiple': 'Pilihan Ganda',
+                'fill': 'Mengisi Kode',
+                'arrange': 'Menyusun Kode'
+            };
+            return labels[type] || type;
+        }
+
+        function createMultipleChoice(question, index) {
+            const container = document.createElement('div');
+            container.className = 'space-y-3';
+
+            question.options.forEach((option, optIndex) => {
+                const optionDiv = document.createElement('div');
+                optionDiv.className = 'option-card border-2 border-gray-200 rounded-lg p-4 cursor-pointer';
+                optionDiv.innerHTML = `
+                    <div class="flex items-center">
+                        <input type="radio" name="question-${index}" value="${optIndex}" class="mr-3">
+                        <span class="text-gray-700">${option}</span>
+                    </div>
+                `;
+
+                optionDiv.addEventListener('click', () => {
+                    const radio = optionDiv.querySelector('input');
+                    radio.checked = true;
+                    
+                    // Update UI
+                    document.querySelectorAll(`[name="question-${index}"]`).forEach(r => {
+                        r.closest('.option-card').classList.remove('selected');
+                    });
+                    optionDiv.classList.add('selected');
+                    
+                    // Save answer
+                    userAnswers[index] = {
+                        questionId: question.id,
+                        answer: optIndex,
+                        correct: optIndex === question.correct
+                    };
+                    
+                    updateProgress();
+                });
+
+                container.appendChild(optionDiv);
+            });
+
+            return container;
+        }
+
+        function createFillCode(question, index) {
+            const container = document.createElement('div');
+            container.className = 'code-editor';
+
+            const lines = question.code.split('\n');
+            lines.forEach((line, lineIndex) => {
+                const lineDiv = document.createElement('div');
+                lineDiv.className = 'code-line';
+
+                if (line.includes('______')) {
+                    const parts = line.split('______');
+                    lineDiv.innerHTML = `
+                        <span>${parts[0]}</span>
+                        <input type="text" 
+                               id="fill-${index}" 
+                               class="bg-gray-700 text-white px-2 py-1 rounded border border-gray-600 focus:border-purple-500 focus:outline-none mx-1" 
+                               style="width: 150px;"
+                               onchange="saveFillAnswer(${index}, '${question.answer}')">
+                        <span>${parts[1] || ''}</span>
+                    `;
+                } else {
+                    lineDiv.textContent = line;
+                }
+
+                container.appendChild(lineDiv);
+            });
+
+            return container;
+        }
+
+        function createArrangeCode(question, index) {
+            const container = document.createElement('div');
+            container.className = 'space-y-4';
+
+            // Drop zone
+            const dropZone = document.createElement('div');
+            dropZone.className = 'drop-zone rounded-lg p-4 mb-4 min-h-[100px]';
+            dropZone.id = `drop-zone-${index}`;
+            dropZone.innerHTML = '<p class="text-gray-500 text-center">Seret kode ke sini untuk menyusun</p>';
+
+            // Draggable items
+            const itemsDiv = document.createElement('div');
+            itemsDiv.className = 'grid grid-cols-1 md:grid-cols-2 gap-3';
+
+            // Shuffle the code lines
+            const shuffledLines = [...question.codeLines].sort(() => Math.random() - 0.5);
+
+            shuffledLines.forEach((line, lineIndex) => {
+                const item = document.createElement('div');
+                item.className = 'draggable bg-gray-100 p-3 rounded-lg cursor-move font-mono text-sm';
+                item.draggable = true;
+                item.textContent = line;
+                item.dataset.originalIndex = question.codeLines.indexOf(line);
+
+                // Drag events
+                item.addEventListener('dragstart', (e) => {
+                    e.dataTransfer.setData('text/plain', lineIndex);
+                    item.style.opacity = '0.5';
+                });
+
+                item.addEventListener('dragend', () => {
+                    item.style.opacity = '1';
+                });
+
+                itemsDiv.appendChild(item);
+            });
+
+            // Drop zone events
+            dropZone.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                dropZone.classList.add('drag-over');
+            });
+
+            dropZone.addEventListener('dragleave', () => {
+                dropZone.classList.remove('drag-over');
+            });
+
+            dropZone.addEventListener('drop', (e) => {
+                e.preventDefault();
+                dropZone.classList.remove('drag-over');
+
+                const draggedIndex = e.dataTransfer.getData('text/plain');
+                const draggedItem = itemsDiv.children[draggedIndex];
+
+                if (dropZone.children.length === 1 && dropZone.children[0].tagName === 'P') {
+                    dropZone.innerHTML = '';
+                }
+
+                const droppedItem = document.createElement('div');
+                droppedItem.className = 'bg-purple-100 p-3 rounded-lg mb-2 font-mono text-sm';
+                droppedItem.textContent = draggedItem.textContent;
+                droppedItem.dataset.originalIndex = draggedItem.dataset.originalIndex;
+
+                dropZone.appendChild(droppedItem);
+                draggedItem.style.display = 'none';
+
+                // Check arrangement
+                checkArrangement(index, question);
+            });
+
+            container.appendChild(dropZone);
+            container.appendChild(itemsDiv);
+
+            return container;
+        }
+
+        function saveFillAnswer(index, correctAnswer) {
+            const input = document.getElementById(`fill-${index}`);
+            const userAnswer = input.value.trim().toLowerCase();
+            const isCorrect = userAnswer === correctAnswer.toLowerCase();
+
+            userAnswers[index] = {
+                questionId: selectedQuestions[index].id,
+                answer: userAnswer,
+                correct: isCorrect
+            };
+
+            updateProgress();
+        }
+
+        function checkArrangement(index, question) {
+            const dropZone = document.getElementById(`drop-zone-${index}`);
+            const droppedItems = Array.from(dropZone.children).filter(child => child.tagName !== 'P');
+            
+            if (droppedItems.length === question.codeLines.length) {
+                const userOrder = droppedItems.map(item => parseInt(item.dataset.originalIndex));
+                const isCorrect = JSON.stringify(userOrder) === JSON.stringify(question.correctOrder);
+
+                userAnswers[index] = {
+                    questionId: question.id,
+                    answer: userOrder,
+                    correct: isCorrect
+                };
+
+                updateProgress();
+            }
+        }
+
+        function updateProgress() {
+            answeredCount = Object.keys(userAnswers).length;
+            document.getElementById('answeredCount').textContent = answeredCount;
+            
+            const progress = (answeredCount / 30) * 100;
+            document.getElementById('progressBar').style.width = `${progress}%`;
+
+            // Update score
+            totalScore = 0;
+            Object.values(userAnswers).forEach(answer => {
+                if (answer.correct) {
+                    totalScore += 2;
+                }
+            });
+            document.getElementById('totalScore').textContent = totalScore;
+        }
+
+        function submitQuiz() {
+            if (answeredCount < 30) {
+                if (!confirm(`Anda belum menjawab semua soal (${answeredCount}/30). Lanjutkan submit?`)) {
+                    return;
+                }
+            }
+
+            // Calculate results
+            let correctCount = 0;
+            let wrongCount = 0;
+
+            Object.values(userAnswers).forEach(answer => {
+                if (answer.correct) {
+                    correctCount++;
+                } else {
+                    wrongCount++;
+                }
+            });
+
+            const accuracy = Math.round((correctCount / answeredCount) * 100);
+
+            // Show results
+            document.getElementById('correctCount').textContent = correctCount;
+            document.getElementById('wrongCount').textContent = wrongCount;
+            document.getElementById('finalScore').textContent = totalScore;
+            document.getElementById('accuracyPercent').textContent = `${accuracy}%`;
+
+            // Show modal
+            document.getElementById('resultsModal').classList.remove('hidden');
+
+            // Animate accuracy bar
+            setTimeout(() => {
+                document.getElementById('accuracyBar').style.width = `${accuracy}%`;
+            }, 100);
+
+            // Highlight correct/wrong answers
+            highlightAnswers();
+        }
+
+        function highlightAnswers() {
+            selectedQuestions.forEach((question, index) => {
+                const userAnswer = userAnswers[index];
+                if (!userAnswer) return;
+
+                if (question.type === 'multiple') {
+                    const options = document.querySelectorAll(`[name="question-${index}"]`);
+                    options.forEach((option, optIndex) => {
+                        const optionCard = option.closest('.option-card');
+                        if (optIndex === question.correct) {
+                            optionCard.classList.add('correct-answer');
+                        } else if (optIndex === userAnswer.answer && !userAnswer.correct) {
+                            optionCard.classList.add('wrong-answer');
+                        }
+                    });
+                }
+            });
+        }
+
+        function reviewAnswers() {
+            // Scroll to first question
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            document.getElementById('resultsModal').classList.add('hidden');
+        }
+
+        function restartQuiz() {
+            // Reset state
+            userAnswers = {};
+            totalScore = 0;
+            answeredCount = 0;
+            
+            // Reset UI
+            document.getElementById('totalScore').textContent = '0';
+            document.getElementById('answeredCount').textContent = '0';
+            document.getElementById('progressBar').style.width = '0%';
+            document.getElementById('resultsModal').classList.add('hidden');
+            
+            // Reinitialize
+            initQuiz();
+        }
+
+        // Initialize on load
+        document.addEventListener('DOMContentLoaded', initQuiz);
+    </script>
+</body>
+</html>
