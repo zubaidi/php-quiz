@@ -113,7 +113,7 @@
     </div>
 
     <script>
-        // Data Kuis
+        // Data Kuis - 50 Soal
         const quizData = [
             {
                 question: "Fungsi apa yang digunakan untuk membuat koneksi ke database MySQL menggunakan MySQLi?",
@@ -214,6 +214,406 @@
                     "mysqli_charset($conn, 'utf8')"
                 ],
                 correct: 0
+            },
+            {
+                question: "Apa perbedaan antara mysql_* dan mysqli_*?",
+                options: [
+                    "mysqli_* lebih cepat",
+                    "mysql_* sudah deprecated",
+                    "mysqli_* support OOP",
+                    "Semua benar"
+                ],
+                correct: 3
+            },
+            {
+                question: "Method apa di MySQLi yang digunakan untuk mengambil satu baris hasil query?",
+                options: [
+                    "get_row()",
+                    "fetch_row()",
+                    "fetch_assoc()",
+                    "mysqli_fetch_assoc()"
+                ],
+                correct: 3
+            },
+            {
+                question: "Bagaimana cara membuat koneksi database dengan PDO?",
+                options: [
+                    "$pdo = new PDO('mysql:host=localhost;dbname=test', 'user', 'pass')",
+                    "$pdo = connect PDO('mysql:host=localhost;dbname=test')",
+                    "$pdo = PDO::connect('mysql:host=localhost;dbname:test')",
+                    "$pdo = new Database('mysql:host=localhost;dbname=test')"
+                ],
+                correct: 0
+            },
+            {
+                question: "Apa fungsi dari mysqli_real_escape_string()?",
+                options: [
+                    "Membersihkan string dari special characters",
+                    "Mengubah string menjadi real",
+                    "Memvalidasi string",
+                    "Mengenkripsi string"
+                ],
+                correct: 0
+            },
+            {
+                question: "Method mana di PDO yang digunakan untuk menghitung jumlah baris hasil query?",
+                options: [
+                    "count()",
+                    "num_rows()",
+                    "rowCount()",
+                    "length()"
+                ],
+                correct: 2
+            },
+            {
+                question: "Apa yang dimaksud dengan persistent connection di database?",
+                options: [
+                    "Koneksi yang tidak pernah terputus",
+                    "Koneksi yang digunakan kembali antar request",
+                    "Koneksi dengan timeout lama",
+                    "Koneksi yang aman dari serangan"
+                ],
+                correct: 1
+            },
+            {
+                question: "Bagaimana cara mengaktifkan error reporting di PDO?",
+                options: [
+                    "$pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION)",
+                    "pdo_error_reporting(true)",
+                    "$pdo->errorMode(true)",
+                    "set_error_mode(PDO::ERROR_ON)"
+                ],
+                correct: 0
+            },
+            {
+                question: "Apa kegunaan dari method beginTransaction() di PDO?",
+                options: [
+                    "Memulai koneksi baru",
+                    "Memulai transaksi database",
+                    "Memulai session",
+                    "Memulai query"
+                ],
+                correct: 1
+            },
+            {
+                question: "Method apa yang digunakan untuk rollback transaksi di MySQLi?",
+                options: [
+                    "rollback()",
+                    "mysqli_rollback()",
+                    "cancel()",
+                    "undo()"
+                ],
+                correct: 1
+            },
+            {
+                question: "Apa fungsi dari mysqli_insert_id()?",
+                options: [
+                    "Mengambil ID terakhir yang diinsert",
+                    "Menginsert ID baru",
+                    "Menghitung jumlah insert",
+                    "Memvalidasi ID"
+                ],
+                correct: 0
+            },
+            {
+                question: "Bagaimana cara mengambil semua hasil query sekaligus di PDO?",
+                options: [
+                    "fetchAll()",
+                    "get_all()",
+                    "fetch_array()",
+                    "fetch_multiple()"
+                ],
+                correct: 0
+            },
+            {
+                question: "Apa yang terjadi jika kita menggunakan query SELECT tanpa menutup result set?",
+                options: [
+                    "Memory leak",
+                    "Query berikutnya akan gagal",
+                    "Tidak ada masalah",
+                    "Database akan crash"
+                ],
+                correct: 1
+            },
+            {
+                question: "Method mana di MySQLi OOP untuk mengeksekusi query?",
+                options: [
+                    "run()",
+                    "execute()",
+                    "query()",
+                    "send()"
+                ],
+                correct: 2
+            },
+            {
+                question: "Apa perbedaan antara fetch() dan fetchAll() di PDO?",
+                options: [
+                    "fetch() untuk satu baris, fetchAll() untuk semua baris",
+                    "fetch() lebih cepat",
+                    "fetchAll() tidak bisa digunakan",
+                    "Tidak ada perbedaan"
+                ],
+                correct: 0
+            },
+            {
+                question: "Bagaimana cara mengecek apakah koneksi database berhasil?",
+                options: [
+                    "if ($conn) echo 'Connected';",
+                    "check_connection($conn);",
+                    "validate_db($conn);",
+                    "is_connected($conn);"
+                ],
+                correct: 0
+            },
+            {
+                question: "Apa fungsi dari mysqli_free_result()?",
+                options: [
+                    "Membebaskan memory dari result set",
+                    "Menghapus hasil query",
+                    "Mereset koneksi",
+                    "Membersihkan cache"
+                ],
+                correct: 0
+            },
+            {
+                question: "Method apa di PDO untuk mengambil data sebagai objek?",
+                options: [
+                    "fetch_object()",
+                    "fetch(PDO::FETCH_OBJ)",
+                    "get_object()",
+                    "to_object()"
+                ],
+                correct: 1
+            },
+            {
+                question: "Apa yang dimaksud dengan connection pooling?",
+                options: [
+                    "Kumpulan koneksi yang dapat digunakan kembali",
+                    "Koneksi untuk pool database",
+                    "Koneksi dengan banyak database",
+                    "Koneksi terdistribusi"
+                ],
+                correct: 0
+            },
+            {
+                question: "Bagaimana cara mengatur timeout koneksi di MySQLi?",
+                options: [
+                    "mysqli_options($conn, MYSQLI_OPT_CONNECT_TIMEOUT, 10)",
+                    "$conn->timeout(10)",
+                    "set_connection_timeout(10)",
+                    "mysqli_timeout($conn, 10)"
+                ],
+                correct: 0
+            },
+            {
+                question: "Apa kegunaan dari method commit() di transaksi database?",
+                options: [
+                    "Menyimpan perubahan ke database",
+                    "Membatalkan transaksi",
+                    "Memulai transaksi",
+                    "Memvalidasi data"
+                ],
+                correct: 0
+            },
+            {
+                question: "Method mana di MySQLi untuk mengambil jumlah baris yang terpengaruh?",
+                options: [
+                    "affected_rows()",
+                    "mysqli_affected_rows()",
+                    "num_rows()",
+                    "row_count()"
+                ],
+                correct: 1
+            },
+            {
+                question: "Bagaimana cara escape string di PDO?",
+                options: [
+                    "Tidak perlu, gunakan prepared statement",
+                    "pdo_escape_string()",
+                    "$pdo->escape()",
+                    "PDO::escape()"
+                ],
+                correct: 0
+            },
+            {
+                question: "Apa fungsi dari mysqli_select_db()?",
+                options: [
+                    "Memilih database yang akan digunakan",
+                    "Membuat database baru",
+                    "Menghapus database",
+                    "Membackup database"
+                ],
+                correct: 0
+            },
+            {
+                question: "Method apa di PDO untuk mengambil kolom dari hasil query?",
+                options: [
+                    "fetchColumn()",
+                    "getColumn()",
+                    "column()",
+                    "get_col()"
+                ],
+                correct: 0
+            },
+            {
+                question: "Apa yang terjadi jika kita mencoba terhubung ke database yang tidak ada?",
+                options: [
+                    "PHP akan membuat database baru",
+                    "Koneksi akan gagal dengan error",
+                    "Koneksi berhasil tapi tidak bisa query",
+                    "Database akan dibuat otomatis"
+                ],
+                correct: 1
+            },
+            {
+                question: "Bagaimana cara mengubah database aktif di MySQLi?",
+                options: [
+                    "$conn->select_db('new_db')",
+                    "mysqli_change_db($conn, 'new_db')",
+                    "use database new_db",
+                    "$conn->database('new_db')"
+                ],
+                correct: 0
+            },
+            {
+                question: "Apa perbedaan antara query() dan exec() di PDO?",
+                options: [
+                    "query() untuk SELECT, exec() untuk INSERT/UPDATE/DELETE",
+                    "query() lebih cepat",
+                    "exec() support prepared statement",
+                    "Tidak ada perbedaan"
+                ],
+                correct: 0
+            },
+            {
+                question: "Method mana di MySQLi untuk mengecek error?",
+                options: [
+                    "error()",
+                    "mysqli_error()",
+                    "get_error()",
+                    "last_error()"
+                ],
+                correct: 1
+            },
+            {
+                question: "Bagaimana cara mengambil error info di PDO?",
+                options: [
+                    "$pdo->errorInfo()",
+                    "pdo_get_error()",
+                    "$pdo->getError()",
+                    "PDO::error()"
+                ],
+                correct: 0
+            },
+            {
+                question: "Apa fungsi dari mysqli_ping()?",
+                options: [
+                    "Mengecek apakah koneksi masih aktif",
+                    "Mengirim ping ke server",
+                    "Mengukur latency",
+                    "Menguji kecepatan koneksi"
+                ],
+                correct: 0
+            },
+            {
+                question: "Method apa di PDO untuk mengatur fetch mode default?",
+                options: [
+                    "setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC)",
+                    "setDefaultFetch()",
+                    "setFetchMode()",
+                    "PDO::setFetch()"
+                ],
+                correct: 0
+            },
+            {
+                question: "Bagaimana cara membuat prepared statement di MySQLi?",
+                options: [
+                    "$stmt = $conn->prepare('SELECT * FROM users WHERE id = ?')",
+                    "$stmt = prepare('SELECT * FROM users WHERE id = ?')",
+                    "$stmt = mysqli_prepare('SELECT * FROM users WHERE id = ?')",
+                    "$stmt = $conn->statement('SELECT * FROM users WHERE id = ?')"
+                ],
+                correct: 0
+            },
+            {
+                question: "Apa yang dimaksud dengan binding parameter?",
+                options: [
+                    "Menghubungkan variabel PHP dengan placeholder di query",
+                    "Mengikat parameter ke koneksi",
+                    "Mengamankan parameter",
+                    "Mengvalidasi parameter"
+                ],
+                correct: 0
+            },
+            {
+                question: "Method mana di MySQLi untuk binding parameter?",
+                options: [
+                    "bind_param()",
+                    "bindParam()",
+                    "bind()",
+                    "parameter()"
+                ],
+                correct: 0
+            },
+            {
+                question: "Bagaimana cara binding parameter di PDO?",
+                options: [
+                    "$stmt->bindParam(':id', $id)",
+                    "$stmt->bind(':id', $id)",
+                    "bindParam($stmt, ':id', $id)",
+                    "$stmt->parameter(':id', $id)"
+                ],
+                correct: 0
+            },
+            {
+                question: "Apa fungsi dari method get_result() di MySQLi?",
+                options: [
+                    "Mengambil hasil dari prepared statement",
+                    "Mengambil result set",
+                    "Menghitung hasil",
+                    "Memvalidasi hasil"
+                ],
+                correct: 0
+            },
+            {
+                question: "Method apa di PDO untuk mengambil jumlah kolom?",
+                options: [
+                    "columnCount()",
+                    "num_columns()",
+                    "countColumns()",
+                    "getColumnCount()"
+                ],
+                correct: 0
+            },
+            {
+                question: "Bagaimana cara menutup prepared statement di MySQLi?",
+                options: [
+                    "$stmt->close()",
+                    "mysqli_stmt_close($stmt)",
+                    "$stmt->free()",
+                    "close_statement($stmt)"
+                ],
+                correct: 0
+            },
+            {
+                question: "Apa yang terjadi jika kita lupa menutup prepared statement?",
+                options: [
+                    "Memory leak",
+                    "Statement akan otomatis ditutup",
+                    "Error akan terjadi",
+                    "Koneksi akan terputus"
+                ],
+                correct: 1
+            },
+            {
+                question: "Method mana di PDO untuk mengambil metadata kolom?",
+                options: [
+                    "getColumnMeta()",
+                    "getMetaData()",
+                    "columnInfo()",
+                    "describeColumn()"
+                ],
+                correct: 0
             }
         ];
 
@@ -222,6 +622,23 @@
         let score = 0;
         let userAnswers = [];
         let participantName = '';
+        let selectedQuestions = []; // Menyimpan 10 soal yang dipilih secara acak
+
+        // Fungsi untuk mengacak array
+        function shuffleArray(array) {
+            const newArray = [...array];
+            for (let i = newArray.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
+            }
+            return newArray;
+        }
+
+        // Fungsi untuk memilih 10 soal secara acak
+        function selectRandomQuestions() {
+            const shuffled = shuffleArray(quizData);
+            return shuffled.slice(0, 10);
+        }
 
         // Mulai Kuis
         function startQuiz() {
@@ -235,12 +652,16 @@
             participantName = nameInput.value.trim();
             document.getElementById('nameForm').classList.add('hidden');
             document.getElementById('quizContainer').classList.remove('hidden');
+            
+            // Pilih 10 soal secara acak
+            selectedQuestions = selectRandomQuestions();
+            
             showQuestion();
         }
 
         // Tampilkan Pertanyaan
         function showQuestion() {
-            const question = quizData[currentQuestion];
+            const question = selectedQuestions[currentQuestion];
             document.getElementById('questionText').textContent = `Pertanyaan ${currentQuestion + 1}: ${question.question}`;
             
             const optionsContainer = document.getElementById('optionsContainer');
@@ -270,9 +691,9 @@
 
         // Update Progress Bar
         function updateProgress() {
-            const progress = ((currentQuestion + 1) / quizData.length) * 100;
+            const progress = ((currentQuestion + 1) / selectedQuestions.length) * 100;
             document.getElementById('progressBar').style.width = `${progress}%`;
-            document.getElementById('progressText').textContent = `${currentQuestion + 1} / ${quizData.length}`;
+            document.getElementById('progressText').textContent = `${currentQuestion + 1} / ${selectedQuestions.length}`;
         }
 
         // Update Navigation Buttons
@@ -282,7 +703,7 @@
             
             prevBtn.disabled = currentQuestion === 0;
             
-            if (currentQuestion === quizData.length - 1) {
+            if (currentQuestion === selectedQuestions.length - 1) {
                 nextBtn.innerHTML = '<i class="fas fa-check mr-2"></i>Selesai';
                 nextBtn.onclick = finishQuiz;
             } else {
@@ -328,7 +749,7 @@
             // Hitung skor
             score = 0;
             userAnswers.forEach((answer, index) => {
-                if (answer === quizData[index].correct) {
+                if (answer === selectedQuestions[index].correct) {
                     score++;
                 }
             });
@@ -341,12 +762,12 @@
             document.getElementById('quizContainer').classList.add('hidden');
             document.getElementById('resultContainer').classList.remove('hidden');
             
-            const percentage = (score / quizData.length) * 100;
+            const percentage = (score / selectedQuestions.length) * 100;
             document.getElementById('resultName').textContent = participantName;
             document.getElementById('scoreDisplay').textContent = score;
             document.getElementById('percentageDisplay').textContent = percentage;
             document.getElementById('correctCount').textContent = score;
-            document.getElementById('incorrectCount').textContent = quizData.length - score;
+            document.getElementById('incorrectCount').textContent = selectedQuestions.length - score;
             
             const resultIcon = document.getElementById('resultIcon');
             const resultMessage = document.getElementById('resultMessage');
@@ -355,7 +776,7 @@
                 resultIcon.className = 'fas fa-trophy text-yellow-500 text-6xl mb-4';
                 resultMessage.textContent = 'Luar biasa! Anda menguasai materi koneksi database PHP dengan sangat baik!';
             } else if (percentage >= 60) {
-                resultIcon.className = 'fas fa-medal text-silver-500 text-6xl mb-4';
+                resultIcon.className = 'fas fa-medal text-gray-400 text-6xl mb-4';
                 resultMessage.textContent = 'Bagus! Anda sudah memahami dasar-dasar koneksi database PHP.';
             } else if (percentage >= 40) {
                 resultIcon.className = 'fas fa-star text-blue-500 text-6xl mb-4';
@@ -372,6 +793,7 @@
             score = 0;
             userAnswers = [];
             participantName = '';
+            selectedQuestions = [];
             
             document.getElementById('resultContainer').classList.add('hidden');
             document.getElementById('nameForm').classList.remove('hidden');
